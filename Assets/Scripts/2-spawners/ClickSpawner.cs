@@ -8,6 +8,7 @@ public class ClickSpawner: MonoBehaviour {
     [SerializeField] protected InputAction spawnAction = new InputAction(type: InputActionType.Button);
     [SerializeField] protected GameObject prefabToSpawn;
     [SerializeField] protected Vector3 velocityOfSpawnedObject;
+    protected float timer = 0;
 
     void OnEnable()  {
         spawnAction.Enable();
@@ -35,6 +36,7 @@ public class ClickSpawner: MonoBehaviour {
     }
     
     private void Update() {
+        timer += Time.deltaTime;
         if (spawnAction.WasPressedThisFrame()) {
             spawnObject();
         }
