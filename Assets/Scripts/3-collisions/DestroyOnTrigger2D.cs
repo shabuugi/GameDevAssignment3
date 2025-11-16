@@ -8,7 +8,7 @@ using UnityEngine;
 public class DestroyOnTrigger2D : MonoBehaviour {
     [Tooltip("Every object tagged with this tag will trigger the destruction of both objects")]
     [SerializeField] string triggeringTag;
-
+    [SerializeField] int pointsToAdd;
     public event System.Action onHit;  // "public event" means that other objects can just subscribe or unsubscribe, but not do other stuff with this public variable.
 
     private void OnTriggerEnter2D(Collider2D other) {

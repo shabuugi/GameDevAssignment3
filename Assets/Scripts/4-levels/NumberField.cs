@@ -18,7 +18,7 @@ public class NumberField : MonoBehaviour {
     public void SetNumber(int newNumber) {
         this.number = newNumber;
         GetComponent<TextMeshPro>().text = newNumber.ToString();
-        score.text = newNumber.ToString();
+        score.text = "Score:" + newNumber;
     }
 
     public void AddNumber(int toAdd) {
