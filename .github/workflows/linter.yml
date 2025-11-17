@@ -1,8 +1,8 @@
 name: Unity C# Linter
 
 on:
-  push:  # Trigger on every push
-  pull_request:  # Also run on pull requests
+  push:
+  pull_request:
 
 jobs:
   lint:
@@ -11,16 +11,39 @@ jobs:
 
     steps:
       - name: Checkout Repository
+      # מאפשר ביצוע commit בחזרה לריפו
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0   # חובה כדי לאפשר push
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.x'  # Adjust to the required .NET version for Unity
+          dotnet-version: '7.x'
 
       - name: Install dotnet-format
         run: dotnet tool install -g dotnet-format
 
-      - name: Run dotnet-format
-        # Run dotnet-format in check mode to identify issues only in .cs files in Assets/Scripts and subfolders
-        run: dotnet-format Assets/Scripts --check --folder --include **/*.cs --verbosity diagnostic
+      - name: Run dotnet-format (auto fix)
+        run: dotnet-format Assets/Scripts --folder --include "Assets/Scripts/**/*.cs"
+
+      - name: Check if any files changed
+        id: git_diff
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.git_diff.outputs.changed == 'true'
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add .
+          git commit -m "Auto-format C# code via dotnet-format"
+          git push
+
+      - name: Run dotnet-format in check mode
+        run: dotnet-format Assets/Scripts --check --folder --include "Assets/Scripts/**/*.cs"
